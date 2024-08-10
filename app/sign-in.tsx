@@ -17,15 +17,15 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const { signIn, signUp, session, setSession } = useSession();
+  const { signIn, signUp, session } = useSession();
   const toast = useToastController();
 
 
   // Redirect to the home page if the user is already signed in.
-  if (session) {
-    if (session !== 'confirming') {
+  if (session && session.email) {
+    if (session.accessToken) {
       return <Redirect href="/(app)" />;
-    } else if (session === 'confirming') {
+    } else if (session.confirmation_status === 'unconfirmed') {
       return <Redirect href="/confirm" />;
     }
   }
@@ -41,7 +41,7 @@ const LoginPage = () => {
             toast.show('Sign-In Failed!', {
               message: 'User not confirmed',
             });
-            setSession('confirming');
+            // setSession({email: email, confirmation_status: 'unconfirmed'});
           }
           // prevent error from logging in console
           toast.show('Sign-In Failed!', {

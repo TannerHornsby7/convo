@@ -11,41 +11,58 @@ import DancingBars from '@/components/DancingBars';
 
 const ConfirmUserPage: React.FC = () => {
   const [confirmationCode, setConfirmationCode] = useState<string>('');
-  const { session, confirmUser, isLoading, signOut } = useSession();
+  const { session, confirmUser, resendConfirmation, isLoading, signOut } = useSession();
   const toast = useToastController();
-  const [newCodeRequestable, setNewCodeRequestable] = useState<boolean>(false);
 
   if (isLoading) {
     return <DancingBars />;
   }
 
-  if (!session) {
+  if (!session || !session.email) {
     return <Redirect href="/sign-in" />;
   }
 
-  if (session !== 'confirming') {
+  if (session.confirmation_status && session.confirmation_status === 'confirmed') {
     return <Redirect href="/(app)" />;
   }
 
   const handleSubmit = async () => {
     try {
-      await confirmUser(email, confirmationCode);
+      await confirmUser(confirmationCode);
     } catch (error) {
-      if (newCodeRequestable) {
-        if (error) {
-          // prevent error from logging in console
-          toast.show('Confirmation Failed!', {
-            message: formatErrorMessage(error as Error),
-          })
-        } else {
-          toast.show('Confirmation Failed!', {
-            message: 'An unknown error occurred',
-          })
-        }
+      if (error) {
+        // prevent error from logging in console
+        toast.show('Confirmation Failed!', {
+          message: formatErrorMessage(error as Error),
+        })
+      } else {
+        toast.show('Confirmation Failed!', {
+          message: 'An unknown error occurred',
+        })
       }
     }
-    setNewCodeRequestable(true);
   };
+
+  const handleResendConfirmationCode = async () => {
+    // make a toast alert when the resendConfirmation function is called
+    try {
+      await resendConfirmation();
+      toast.show('Confirmation Code Sent!', {
+        message: 'A new confirmation code has been sent to your email',
+      });
+    } catch (error) {
+      if (error) {
+        // prevent error from logging in console
+        toast.show('Confirmation Failed!', {
+          message: formatErrorMessage(error as Error),
+        })
+      } else {
+        toast.show('Confirmation Failed!', {
+          message: 'An unknown error occurred',
+        })
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -70,11 +87,9 @@ const ConfirmUserPage: React.FC = () => {
         <Button mb={16} onPress={handleSubmit}>
           Confirm Account
         </Button>
-        {newCodeRequestable && (
-          <Button onPress={() => {}}>
-            Resend Confirmation Code
-          </Button>
-        )}
+        <Button backgroundColor='$gray10Light' onPress={handleResendConfirmationCode}>
+          Resend Confirmation Code
+        </Button>
       </View>
     </View>
   );

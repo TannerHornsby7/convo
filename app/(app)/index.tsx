@@ -15,7 +15,6 @@ export default function Index() {
       <Text
         style={{ color: 'white', fontSize: 24 }}
         onPress={() => {
-          // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
           signOut();
         }}>
         Sign Out

@@ -14,6 +14,7 @@ function useAsyncState<T>(
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
+  // then we store it
   if (Platform.OS === 'web') {
     try {
       if (value === null) {
@@ -35,21 +36,21 @@ export async function setStorageItemAsync(key: string, value: string | null) {
 
 export function useStorageState(key: string): UseStateHook<string> {
   // Public
-  const [state, setState] = useAsyncState<string>();
+  const [state, dispatch] = useAsyncState<string>();
 
   // Get
   React.useEffect(() => {
     if (Platform.OS === 'web') {
       try {
         if (typeof localStorage !== 'undefined') {
-          setState(localStorage.getItem(key));
+          dispatch(localStorage.getItem(key));
         }
       } catch (e) {
         console.error('Local storage is unavailable:', e);
       }
     } else {
       SecureStore.getItemAsync(key).then(value => {
-        setState(value);
+        dispatch(value);
       });
     }
   }, [key]);
@@ -57,7 +58,7 @@ export function useStorageState(key: string): UseStateHook<string> {
   // Set
   const setValue = React.useCallback(
     (value: string | null) => {
-      setState(value);
+      dispatch(value);
       setStorageItemAsync(key, value);
     },
     [key]

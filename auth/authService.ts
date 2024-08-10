@@ -1,16 +1,21 @@
-import { InitiateAuthCommandOutput, SignUpCommandOutput, CognitoIdentityProviderClient, InitiateAuthCommand, SignUpCommand, ConfirmSignUpCommand, AuthFlowType } from "@aws-sdk/client-cognito-identity-provider";
+import { InitiateAuthCommandOutput, CognitoIdentityProviderClient, InitiateAuthCommand, SignUpCommand, ConfirmSignUpCommand, ResendConfirmationCodeCommand, AuthFlowType } from "@aws-sdk/client-cognito-identity-provider";
 import config from "../config.json";
+import { ReadableStream } from "web-streams-polyfill";
+    
+if (typeof global.ReadableStream === "undefined") {
+   global.ReadableStream = ReadableStream;
+}
 
 export const cognitoClient = new CognitoIdentityProviderClient({
   region: config.region,
 });
 
-export const signIn : (username: string, password: string) => Promise<InitiateAuthCommandOutput | undefined> = async (username: string, password: string) => {
+export const signIn : (email: string, password: string) => Promise<InitiateAuthCommandOutput | undefined> = async (email: string, password: string) => {
   const params = {
     AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
     ClientId: config.clientId,
     AuthParameters: {
-      USERNAME: username,
+      USERNAME: email,
       PASSWORD: password,
     },
   };
@@ -40,30 +45,39 @@ export const signUp = async (email: string, password: string) => {
   try {
     const command = new SignUpCommand(params);
     const response = await cognitoClient.send(command);
-    console.log("Sign up success: ", response);
     return response;
   } catch (error) {
-    console.error("Error signing up: ", error);
     throw error;
   }
 };
 
-export const confirmSignUp = async (username: string, code: string) => {
+export const confirmSignUp = async (email: string, code: string) => {
   const params = {
     ClientId: config.clientId,
-    Username: username,
+    Username: email,
     ConfirmationCode: code,
   };
   try {
     const command = new ConfirmSignUpCommand(params);
-    await cognitoClient.send(command);
-    console.log("User confirmed successfully");
-    return true;
+    return await cognitoClient.send(command);
   } catch (error) {
-    console.error("Error confirming sign up: ", error);
     throw error;
   }
 };
+
+export const resendConfirmation = async (email: string) => {
+  const params = {
+    ClientId: config.clientId,
+    Username: email,
+  };
+  try {
+    const command = new ResendConfirmationCodeCommand(params);
+    await cognitoClient.send(command);
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export const formatErrorMessage = (error: Error) => {
   const messages = error.message.split(";");  

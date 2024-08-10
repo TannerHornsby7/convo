@@ -2,6 +2,7 @@ import { Slot } from 'expo-router';
 import { SessionProvider } from '../auth/AuthProvider';
 import { ToastProvider } from '@tamagui/toast';
 
+
 import { TamaguiProvider, createTamagui } from 'tamagui' // or 'tamagui'
 import { config } from '@tamagui/config/v3'
 
