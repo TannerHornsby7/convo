@@ -1,0 +1,43 @@
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: transparent;
+  }
+  
+  .bars {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .bar {
+    width: 20%;
+    height: 50%;
+    background-color: white;
+    animation: bounce 1.2s infinite;
+  }
+  
+  .bar:nth-child(1) {
+    animation-delay: -1.2s;
+  }
+  
+  .bar:nth-child(2) {
+    animation-delay: -1.0s;
+  }
+  
+  .bar:nth-child(3) {
+    animation-delay: -0.8s;
+  }
+  
+  @keyframes bounce {
+    0%, 40%, 100% {
+      transform: scaleY(1);
+    }
+    20% {
+      transform: scaleY(2);
+    }
+  }

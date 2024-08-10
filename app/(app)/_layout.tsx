@@ -1,13 +1,13 @@
 import { Redirect, Stack } from 'expo-router';
 import { useSession } from '../../auth/AuthProvider';
-import { Text } from 'react-native';
+import DancingBars from '@/components/DancingBars';
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <DancingBars />;
   }
 
   // Only require authentication within the (app) group's layout as users

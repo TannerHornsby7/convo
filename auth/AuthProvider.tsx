@@ -10,6 +10,7 @@ const AuthContext = React.createContext<{
   signOut: () => void;
   confirmUser: (username: string, code: string) => Promise<boolean>;
   session?: string | null;
+  setSession: (value: string | null) => void;
   isLoading: boolean;
 }>({
   signIn: async () => null,
@@ -17,6 +18,7 @@ const AuthContext = React.createContext<{
   confirmUser: async () => false,
   signOut: () => null,
   session: null,
+  setSession: () => null,
   isLoading: false,
 });
 
@@ -39,6 +41,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
     <AuthContext.Provider
       value={{
         signIn: async (username: string, password: string) => {
+          // setEmail
           // Perform sign-in logic here
           const AuthResult : InitiateAuthCommandOutput | undefined = await signIn(username, password);
           if (!AuthResult || AuthResult.AuthenticationResult?.AccessToken === undefined) {
@@ -60,6 +63,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
           setSession(null);
         },
         signUp: async (username, password) => {
+            // setEmail
             // Perform sign-up logic here
             const AuthResult: SignUpCommandOutput | undefined = await signUp(username, password);
             // set the state of auth provider to note the user has performed
@@ -100,6 +104,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
             }
         },
         session,
+        setSession,
         isLoading,
       }}>
       {props.children}

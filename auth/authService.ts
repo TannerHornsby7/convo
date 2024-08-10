@@ -21,7 +21,6 @@ export const signIn : (username: string, password: string) => Promise<InitiateAu
       return AuthenticationResult;
     }
   } catch (error) {
-    console.error("Error signing in: ", error);
     throw error;
   }
 };
@@ -65,3 +64,11 @@ export const confirmSignUp = async (username: string, code: string) => {
     throw error;
   }
 };
+
+export const formatErrorMessage = (error: Error) => {
+  const messages = error.message.split(";");  
+  if (error) {
+    return `${error.name}:\n ${messages.map((message) => `• ${message}\n`).join("")}`; 
+  }
+  return "An unknown error occurred";
+}
